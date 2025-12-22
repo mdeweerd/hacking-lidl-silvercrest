@@ -133,66 +133,59 @@ ENV PATH="/home/builder/x-tools/mips-lexra-linux-musl/bin:${PATH}"
 RUN mips-lexra-linux-musl-gcc --version
 
 # ============================================================================
-# Step 5: Install ARM GCC toolchain (for Silabs EFR32)
+# Step 5-8: Install Silabs tools (matching native silabs-tools/ structure)
 # ============================================================================
-RUN cd /home/builder && \
+# All Silabs tools are installed in /home/builder/silabs-tools/
+# This mirrors the native install structure: <project>/silabs-tools/
+
+ENV SILABS_TOOLS="/home/builder/silabs-tools"
+ENV GECKO_SDK_VERSION="4.5.0"
+
+# Create silabs-tools directory
+RUN mkdir -p ${SILABS_TOOLS}
+
+# Step 5: ARM GCC toolchain
+RUN cd ${SILABS_TOOLS} && \
     wget -q --show-progress -O arm-gcc.tar.xz \
         "https://developer.arm.com/-/media/Files/downloads/gnu/12.2.rel1/binrel/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi.tar.xz" && \
     tar xf arm-gcc.tar.xz && \
     mv arm-gnu-toolchain-* arm-gnu-toolchain && \
     rm arm-gcc.tar.xz
 
-ENV PATH="/home/builder/arm-gnu-toolchain/bin:${PATH}"
-
-# Verify ARM toolchain
-RUN arm-none-eabi-gcc --version
-
-# ============================================================================
-# Step 6: Install slc-cli (Silicon Labs CLI)
-# ============================================================================
-RUN cd /home/builder && \
+# Step 6: slc-cli
+RUN cd ${SILABS_TOOLS} && \
     wget -q -O slc_cli.zip "https://www.silabs.com/documents/public/software/slc_cli_linux.zip" && \
     unzip -q slc_cli.zip && \
     rm slc_cli.zip && \
     chmod +x slc_cli/slc
 
-ENV PATH="/home/builder/slc_cli:${PATH}"
-
-# Verify slc-cli
-RUN slc --version
-
-# ============================================================================
-# Step 7: Install Simplicity Commander (for .gbl generation)
-# ============================================================================
-RUN cd /home/builder && \
-    wget -q -O commander.tar.bz "https://www.silabs.com/documents/public/software/SimplicityCommander-Linux.zip" && \
-    unzip -q commander.tar.bz && \
+# Step 7: Simplicity Commander
+RUN cd ${SILABS_TOOLS} && \
+    wget -q -O commander.zip "https://www.silabs.com/documents/public/software/SimplicityCommander-Linux.zip" && \
+    unzip -q commander.zip && \
     tar xf SimplicityCommander-Linux/Commander_linux_x86_64_*.tar.bz -C . && \
-    rm -rf commander.tar.bz SimplicityCommander-Linux
+    rm -rf commander.zip SimplicityCommander-Linux
 
-ENV PATH="/home/builder/commander:${PATH}"
-
-# Verify commander
-RUN commander --version
-
-# ============================================================================
-# Step 8: Install Gecko SDK (from GitHub)
-# ============================================================================
-# Version fixed for reproducibility (must match install_silabs.sh)
-ENV GECKO_SDK_VERSION="4.5.0"
-
+# Step 8: Gecko SDK (from GitHub)
 RUN git lfs install && \
-    cd /home/builder && \
+    cd ${SILABS_TOOLS} && \
     echo "Downloading Gecko SDK v${GECKO_SDK_VERSION}..." && \
     git clone --depth 1 --branch "v${GECKO_SDK_VERSION}" --progress \
         https://github.com/SiliconLabs/gecko_sdk.git gecko_sdk && \
     rm -rf gecko_sdk/.git
 
-ENV GECKO_SDK="/home/builder/gecko_sdk"
-ENV ARM_GCC_DIR="/home/builder/arm-gnu-toolchain"
+# Set up PATH and environment variables
+ENV PATH="${SILABS_TOOLS}/arm-gnu-toolchain/bin:${PATH}"
+ENV PATH="${SILABS_TOOLS}/slc_cli:${PATH}"
+ENV PATH="${SILABS_TOOLS}/commander:${PATH}"
+ENV GECKO_SDK="${SILABS_TOOLS}/gecko_sdk"
+ENV ARM_GCC_DIR="${SILABS_TOOLS}/arm-gnu-toolchain"
+
+# Verify installations
+RUN arm-none-eabi-gcc --version && slc --version && commander --version
 
 # Trust the SDK signature (required by slc-cli 5.11+)
-RUN slc signature trust --sdk /home/builder/gecko_sdk || true
+RUN slc signature trust --sdk ${GECKO_SDK} || true
 
 # ============================================================================
 # Step 9: Build Realtek tools (cvimg, lzma)
@@ -213,17 +206,22 @@ ENV PATH="/home/builder/realtek-tools/bin:${PATH}"
 RUN echo '' >> ~/.bashrc && \
     echo '# Lidl Gateway Build Environment' >> ~/.bashrc && \
     echo 'export PATH="/home/builder/x-tools/mips-lexra-linux-musl/bin:$PATH"' >> ~/.bashrc && \
-    echo 'export PATH="/home/builder/arm-gnu-toolchain/bin:$PATH"' >> ~/.bashrc && \
-    echo 'export PATH="/home/builder/slc_cli:$PATH"' >> ~/.bashrc && \
-    echo 'export PATH="/home/builder/commander:$PATH"' >> ~/.bashrc && \
+    echo 'export PATH="/home/builder/silabs-tools/arm-gnu-toolchain/bin:$PATH"' >> ~/.bashrc && \
+    echo 'export PATH="/home/builder/silabs-tools/slc_cli:$PATH"' >> ~/.bashrc && \
+    echo 'export PATH="/home/builder/silabs-tools/commander:$PATH"' >> ~/.bashrc && \
     echo 'export PATH="/home/builder/realtek-tools/bin:$PATH"' >> ~/.bashrc && \
-    echo 'export GECKO_SDK="/home/builder/gecko_sdk"' >> ~/.bashrc && \
-    echo 'export ARM_GCC_DIR="/home/builder/arm-gnu-toolchain"' >> ~/.bashrc
+    echo 'export GECKO_SDK="/home/builder/silabs-tools/gecko_sdk"' >> ~/.bashrc && \
+    echo 'export ARM_GCC_DIR="/home/builder/silabs-tools/arm-gnu-toolchain"' >> ~/.bashrc
 
 WORKDIR /workspace
 
 # Entrypoint creates symlinks for consistent paths with native builds:
 #   /workspace/x-tools -> /home/builder/x-tools
+#   /workspace/silabs-tools -> /home/builder/silabs-tools
 #   /workspace/1-Build-Environment/11-realtek-tools/bin -> /home/builder/realtek-tools/bin
-ENTRYPOINT ["/bin/bash", "-c", "[ ! -e /workspace/x-tools ] && ln -s /home/builder/x-tools /workspace/x-tools 2>/dev/null || true; [ -d /workspace/1-Build-Environment/11-realtek-tools ] && [ ! -e /workspace/1-Build-Environment/11-realtek-tools/bin ] && ln -s /home/builder/realtek-tools/bin /workspace/1-Build-Environment/11-realtek-tools/bin 2>/dev/null || true; exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "\
+    [ ! -e /workspace/x-tools ] && ln -s /home/builder/x-tools /workspace/x-tools 2>/dev/null || true; \
+    [ ! -e /workspace/silabs-tools ] && ln -s /home/builder/silabs-tools /workspace/silabs-tools 2>/dev/null || true; \
+    [ -d /workspace/1-Build-Environment/11-realtek-tools ] && [ ! -e /workspace/1-Build-Environment/11-realtek-tools/bin ] && ln -s /home/builder/realtek-tools/bin /workspace/1-Build-Environment/11-realtek-tools/bin 2>/dev/null || true; \
+    exec \"$@\"", "--"]
 CMD ["/bin/bash"]
