@@ -103,19 +103,35 @@ Install the complete toolchain (see [1-Build-Environment](./1-Build-Environment/
 
 ### Step 2: Build and Flash the Linux System
 
+**Native:**
 ```bash
 cd 3-Main-SoC-Realtek-RTL8196E
 ./build_rtl8196e.sh    # Build kernel, rootfs, userdata
 ./flash_rtl8196e.sh    # Flash via TFTP
 ```
 
+**Docker** (from project root):
+```bash
+docker run --rm -v $(pwd):/workspace lidl-gateway-builder \
+    /workspace/3-Main-SoC-Realtek-RTL8196E/build_rtl8196e.sh
+# Then flash from host (requires TFTP server)
+```
+
 ### Step 3: Build and Flash the Zigbee Firmware
 
+**Native:**
 ```bash
 cd 2-Zigbee-Radio-Silabs-EFR32/24-NCP-UART-HW
-./build_ncp.sh         # Build NCP firmware
-# Then flash using universal-silabs-flasher (see Option 1, Step 3)
+./build_ncp.sh
 ```
+
+**Docker** (from project root):
+```bash
+docker run --rm -v $(pwd):/workspace lidl-gateway-builder \
+    /workspace/2-Zigbee-Radio-Silabs-EFR32/24-NCP-UART-HW/build_ncp.sh
+```
+
+Then flash using `universal-silabs-flasher` (see Option 1, Step 3).
 
 ### Step 4: Connect to Zigbee2MQTT
 
