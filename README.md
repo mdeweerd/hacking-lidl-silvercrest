@@ -71,7 +71,7 @@ universal-silabs-flasher --device socket://<GATEWAY_IP>:8888 \
     flash --firmware 2-Zigbee-Radio-Silabs-EFR32/24-NCP-UART-HW/firmware/ncp-uart-hw-7.5.1.gbl
 ```
 
-See [22-Flash-Firmware](./2-Zigbee-Radio-Silabs-EFR32/22-Flash-Firmware/) for detailed instructions.
+See [21-Backup-Flash-Restore](./2-Zigbee-Radio-Silabs-EFR32/21-Backup-Flash-Restore/) for detailed instructions.
 
 ### Step 4: Connect to Zigbee2MQTT
 

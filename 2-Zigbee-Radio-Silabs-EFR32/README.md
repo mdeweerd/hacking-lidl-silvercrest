@@ -11,9 +11,9 @@ The EFR32MG1B handles all Zigbee radio communication. The stock firmware uses th
 | Directory | Description |
 |-----------|-------------|
 | [20-EZSP-Reference](./20-EZSP-Reference/) | Introduction to EZSP protocol and EmberZNet stack |
-| [21-Simplicity-Studio](./21-Simplicity-Studio/) | Build your own firmware with Silabs IDE |
-| [22-Backup-Flash-Restore](./22-Backup-Flash-Restore/) | Backup, flash, and restore the Zigbee chip firmware |
-| [23-Bootloader-UART-Xmodem](./23-Bootloader-UART-Xmodem/) | Flash firmware via UART using Gecko bootloader |
+| [21-Backup-Flash-Restore](./21-Backup-Flash-Restore/) | Backup, flash, and restore the Zigbee chip firmware |
+| [22-Build-Zigbee-Firmware](./22-Build-Zigbee-Firmware/) | Build firmware with slc-cli or Simplicity Studio |
+| [23-Bootloader-UART-Xmodem](./23-Bootloader-UART-Xmodem/) | UART XMODEM bootloader for firmware updates |
 | [24-NCP-UART-HW](./24-NCP-UART-HW/) | NCP firmware for Zigbee2MQTT and ZHA |
 
 ## Firmware: NCP (Network Co-Processor)

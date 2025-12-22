@@ -1,11 +1,13 @@
-# Installing Simplicity Studio V5
+# Simplicity Studio V5
 
-## Overview
+Simplicity Studio V5 (SSV5) is the official **GUI-based** development environment
+provided by Silicon Labs for developing, compiling, and flashing firmware onto EFR32 chips.
 
-Simplicity Studio V5 (SSV5) is the official development environment
-provided by **Silicon Labs** for developing, compiling, and flashing
-firmware onto **EFR32** chips. This guide outlines the installation steps
-for both **Windows** and **Linux** systems.
+> **Note:** This project primarily uses [slc-cli](../slc-cli/) for automated builds.
+> Simplicity Studio is an alternative for interactive development and debugging.
+
+> **Warning:** The Lidl Gateway uses an **EFR32MG1B (Series 1)** chip.
+> **Simplicity Studio V6 does not support Series 1 devices.** You must use **V5**.
 
 ______________________________________________________________________
 
@@ -24,8 +26,8 @@ ______________________________________________________________________
 
 ### **2.1 Download Simplicity Studio V5**
 
-- Visit the official Silicon Labs website:\
-  [https://www.silabs.com/developers/simplicity-studio](https://www.silabs.com/developers/simplicity-studio)
+- Visit the official download page:\
+  [Simplicity Studio V5](https://www.silabs.com/software-and-tools/simplicity-studio/simplicity-studio-version-5)
 - Log in to your account and download the **Windows Installer**.
 
 ### **2.2 Install Simplicity Studio**
@@ -65,7 +67,7 @@ documentation on upgrading a project to a new GSDK version.
 
 1. Optionally, connect an **ARM** or **Segger J-Link** debugger to the
    gateway JTAG interface (See
-   [Backup & restore section](../22-Backup-Restore) for details).
+   [Backup & restore section](../../21-Backup-Flash-Restore/) for details).
 2. Open the **Tools** menu and select `Commander`.
 3. Run the following command to check the device:
    ```sh
@@ -89,8 +91,8 @@ These are required for the GUI to function correctly.
 
 ### **3.2 Download Simplicity Studio V5**
 
-- Visit the Silicon Labs website:
-  [https://www.silabs.com/developers/simplicity-studio](https://www.silabs.com/developers/simplicity-studio)
+- Visit the official download page:
+  [Simplicity Studio V5](https://www.silabs.com/software-and-tools/simplicity-studio/simplicity-studio-version-5)
 - Log in to your account and download the **Linux installer**
   (`SimplicityStudioV5.tgz`).
 
@@ -121,7 +123,7 @@ Follow the same steps as in the Windows installation to install: the
 ### **3.5 Verifying the Installation**
 
 1. Optionally, connect an **ARM** or **Segger J-Link** debugger to the
-   gateway JTAG interface (See Backup & restore section for details).
+   gateway JTAG interface (See [Backup & restore section](../../21-Backup-Flash-Restore/) for details).
 2. Open a terminal and run:
    ```sh
    commander device info
@@ -148,6 +150,15 @@ ______________________________________________________________________
   ```sh
   sudo apt install default-jre
   ```
+
+______________________________________________________________________
+
+## 5. Building Firmware with Simplicity Studio
+
+For a step-by-step guide on creating the NCP-UART-HW and Bootloader firmware
+using Simplicity Studio V5, see the legacy documentation:
+
+- [Building NCP-UART-HW with Simplicity Studio V5](https://github.com/jnilo1/hacking-lidl-silvercrest-gateway/tree/v0/1-Firmwares/13-Bootloader-UART-Xmodem)
 
 ______________________________________________________________________
 
