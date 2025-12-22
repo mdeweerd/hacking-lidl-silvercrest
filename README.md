@@ -51,9 +51,12 @@ ______________________________________________________________________
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/jnilo1/hacking-lidl-silvercrest-gateway.git
+git clone --depth 1 https://github.com/jnilo1/hacking-lidl-silvercrest-gateway.git
 cd hacking-lidl-silvercrest-gateway
 ```
+
+> **Tip:** `--depth 1` downloads only the latest version (~5 MB instead of ~70 MB).
+> For the legacy v0 version, use `git clone` without `--depth 1`, then `git checkout v0`.
 
 ### Step 2: Flash the Linux System (RTL8196E)
 
@@ -90,7 +93,7 @@ ______________________________________________________________________
 
 Clone the repository:
 ```bash
-git clone https://github.com/jnilo1/hacking-lidl-silvercrest-gateway.git
+git clone --depth 1 https://github.com/jnilo1/hacking-lidl-silvercrest-gateway.git
 cd hacking-lidl-silvercrest-gateway
 ```
 
